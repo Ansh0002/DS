@@ -1,0 +1,82 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
+
+# Load the dataset
+data = pd.read_csv('Social_Network_Ads.csv')
+
+# Data preprocessing
+# Drop User ID as it's not relevant for prediction
+data = data.drop(['User ID'], axis=1)
+
+# Convert Gender to numerical values (0 for Female, 1 for Male)
+data['Gender'] = data['Gender'].map({'Female': 0, 'Male': 1})
+
+# 1. Feature Correlation Matrix
+plt.figure(figsize=(8, 6))
+correlation_matrix = data.corr()
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', center=0)
+plt.title('Feature Correlation Matrix')
+plt.show()
+
+# Separate features and target
+X = data[['Gender', 'Age', 'EstimatedSalary']]
+y = data['Purchased']
+
+# Split into training and testing sets (80-20 split)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature scaling
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Initialize and train Logistic Regression model
+logreg = LogisticRegression(random_state=42)
+logreg.fit(X_train, y_train)
+
+# Make predictions
+y_pred = logreg.predict(X_test)
+
+# Compute confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+
+# Plot confusion matrix
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+            xticklabels=['Not Purchased', 'Purchased'], 
+            yticklabels=['Not Purchased', 'Purchased'])
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+
+# Extract TP, FP, TN, FN
+TN = cm[0, 0]
+FP = cm[0, 1]
+FN = cm[1, 0]
+TP = cm[1, 1]
+
+# Calculate metrics
+accuracy = accuracy_score(y_test, y_pred)
+error_rate = 1 - accuracy
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+
+# Display results
+print("\nConfusion Matrix Values:")
+print(f"True Positives (TP): {TP}")
+print(f"False Positives (FP): {FP}")
+print(f"True Negatives (TN): {TN}")
+print(f"False Negatives (FN): {FN}")
+
+print("\nPerformance Metrics:")
+print(f"Accuracy: {accuracy:.4f}")
+print(f"Error Rate: {error_rate:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall: {recall:.4f}")

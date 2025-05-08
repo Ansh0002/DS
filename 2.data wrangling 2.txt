@@ -1,0 +1,62 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.stats import zscore, boxcox
+#Create & Load Dataset with Some Missing Values and Outliers
+# Simulate data
+np.random.seed(42)
+data = {
+    "Student_ID": range(1, 101),
+    "Age": np.random.randint(18, 25, 100),
+    "Gender": np.random.choice(["Male", "Female"], 100),
+    "Hours_Studied": np.append(np.random.normal(3, 1, 95), [12, 14, 15, 1, 0]),  # outliers added
+    "Attendance": np.random.uniform(60, 100, 100),
+    "Test_Score": np.append(np.random.normal(70, 10, 97), [30, 32, 28]),  # outliers
+    "GPA": np.random.normal(3.0, 0.5, 100)
+}
+
+df = pd.DataFrame(data)
+
+# Introduce some missing values
+df.loc[5, 'Hours_Studied'] = np.nan
+df.loc[10, 'Attendance'] = np.nan
+df.loc[15, 'Test_Score'] = np.nan
+
+print(df.head())
+#Scan for Missing Values
+print("Missing Values:\n", df.isnull().sum())
+
+# Handle missing values: Impute with median
+df['Hours_Studied'].fillna(df['Hours_Studied'].median(), inplace=True)
+df['Attendance'].fillna(df['Attendance'].median(), inplace=True)
+df['Test_Score'].fillna(df['Test_Score'].median(), inplace=True)
+#Scan for Outliers (Z-score method)
+# Z-score for outlier detection
+numeric_cols = ['Hours_Studied', 'Test_Score', 'GPA']
+z_scores = df[numeric_cols].apply(zscore)
+outliers = (z_scores.abs() > 3)
+
+print("Outliers Detected:\n", outliers.sum())
+
+# Cap outliers (Winsorization - clip to 1st and 99th percentile)
+for col in numeric_cols:
+    lower = df[col].quantile(0.01)
+    upper = df[col].quantile(0.99)
+    df[col] = df[col].clip(lower, upper)
+#Apply Data Transformation (Box-Cox for Hours_Studied)
+# Box-Cox transformation (requires positive values)
+from scipy.stats import boxcox
+
+# Ensure Hours_Studied > 0
+df['Hours_Studied'] = df['Hours_Studied'].apply(lambda x: x if x > 0 else 0.1)
+df['Hours_Studied_BoxCox'], _ = boxcox(df['Hours_Studied'])
+
+# Plot distributions
+sns.histplot(df['Hours_Studied'], kde=True)
+plt.title("Before Transformation")
+plt.show()
+
+sns.histplot(df['Hours_Studied_BoxCox'], kde=True)
+plt.title("After Transformation")
+plt.show()

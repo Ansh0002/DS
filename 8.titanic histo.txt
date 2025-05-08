@@ -1,0 +1,22 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Load Titanic dataset
+titanic = sns.load_dataset('titanic')
+print(titanic.head())
+# Example pattern exploration: survival by class and gender
+sns.countplot(data=titanic, x='class', hue='survived')
+plt.title("Survival Count by Class")
+plt.show()
+
+sns.boxplot(data=titanic, x='sex', y='age')
+plt.title("Age Distribution by Gender")
+plt.show()
+# Plot histogram for 'fare'
+plt.figure(figsize=(10, 6))
+sns.histplot(titanic['fare'], kde=True, bins=40, color='teal')
+plt.title('Distribution of Ticket Prices (Fare)')
+plt.xlabel('Fare')
+plt.ylabel('Number of Passengers')
+plt.grid(True)
+plt.show()

@@ -1,0 +1,33 @@
+import numpy as np
+import pandas as pd
+
+df = pd.read_csv('IRIS.csv')
+df
+
+
+print("Missing values:\n", df.isnull().sum())
+print("\nData Summary:\n", df.describe())
+print("\nShape of the dataset:", df.shape)
+print("\nData types:\n", df.dtypes)
+
+df['species'].value_counts()
+
+# Summarize the variable types based on data types
+print("\nSummary of Variables:")
+for col in df.columns:
+    if df[col].dtype == 'object':
+        print(f"{col}: Character (String)")
+    elif df[col].dtype == 'int64':
+        print(f"{col}: Integer")
+    elif df[col].dtype == 'float64':
+        print(f"{col}: Numeric")
+    elif df[col].dtype == 'bool':
+        print(f"{col}: Logical (Boolean)")
+    else:
+        print(f"{col}: Unknown")
+
+
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['species'] = le.fit_transform(df['species'])
+df.head(5)

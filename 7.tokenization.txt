@@ -1,0 +1,42 @@
+import nltk
+import string
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
+nltk.download('punkt_tab')
+nltk.download('averaged_perceptron_tagger_eng')
+
+# Download necessary NLTK resources
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
+
+# Sample document to be processed
+text = """Natural language processing (NLP) is a fascinating field of artificial intelligence.
+It allows machines to understand and interpret human language, which is crucial in applications like machine translation, speech recognition, and chatbots."""
+
+# 1. Tokenization
+tokens = word_tokenize(text)  # Tokenize the text into words
+print("Tokens:", tokens)
+
+# 2. POS Tagging
+pos_tags = nltk.pos_tag(tokens)  # Perform POS tagging
+print("\nPOS Tags:", pos_tags)
+
+# 3. Stop Words Removal
+stop_words = set(stopwords.words('english'))  # Get stop words in English
+filtered_tokens = [word for word in tokens if word.lower() not in stop_words and word not in string.punctuation]  # Remove stop words and punctuation
+print("\nFiltered Tokens (Stop Words Removed):", filtered_tokens)
+
+# 4. Stemming
+stemmer = PorterStemmer()  # Initialize the stemmer
+stemmed_tokens = [stemmer.stem(word) for word in filtered_tokens]  # Apply stemming
+print("\nStemmed Tokens:", stemmed_tokens)
+
+# 5. Lemmatization
+lemmatizer = WordNetLemmatizer()  # Initialize the lemmatizer
+lemmatized_tokens = [lemmatizer.lemmatize(word) for word in filtered_tokens]  # Apply lemmatization
+print("\nLemmatized Tokens:", lemmatized_tokens)
+

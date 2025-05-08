@@ -1,0 +1,24 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+iris = sns.load_dataset('iris')
+# Create histograms for each feature in the Iris dataset
+iris.drop(columns='species').hist(bins=20, figsize=(10, 8))
+plt.suptitle('Histograms of Features in Iris Dataset')
+plt.show()
+# Create a boxplot for each feature
+plt.figure(figsize=(10, 8))
+sns.boxplot(data=iris.drop(columns='species'))
+plt.title("Boxplot for Features in Iris Dataset")
+plt.show()
+#Compare Feature Distributions Across Species
+# Pairplot to compare features across species
+sns.pairplot(iris, hue='species')
+plt.suptitle("Pairplot of Iris Features by Species", y=1.02)
+plt.show()
+
+# Violin plots for more detailed distribution comparison
+plt.figure(figsize=(12, 6))
+sns.violinplot(data=iris, x='species', y='sepal_length')
+plt.title("Violin Plot: Sepal Length by Species")
+plt.show()
