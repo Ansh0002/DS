@@ -1,42 +1,58 @@
+#part1
+sample_doc = "Natural Language Processing (NLP) is a sub-field of artificial intelligence concerned with understanding and processing human language."
 import nltk
 import string
-from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
-from nltk.stem import WordNetLemmatizer
-nltk.download('punkt_tab')
-nltk.download('averaged_perceptron_tagger_eng')
+from nltk.tokenize import word_tokenize
+from nltk import pos_tag
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
 
-# Download necessary NLTK resources
+
+# Download required resources
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
-
-# Sample document to be processed
-text = """Natural language processing (NLP) is a fascinating field of artificial intelligence.
-It allows machines to understand and interpret human language, which is crucial in applications like machine translation, speech recognition, and chatbots."""
-
-# 1. Tokenization
-tokens = word_tokenize(text)  # Tokenize the text into words
-print("Tokens:", tokens)
-
-# 2. POS Tagging
-pos_tags = nltk.pos_tag(tokens)  # Perform POS tagging
+nltk.download('omw-1.4')
+nltk.download('punkt_tab')
+nltk.download('averaged_perceptron_tagger_eng')#tokenise
+tokens = word_tokenize(sample_doc)
+print("\nTokens:", tokens)
+#pos tagging
+pos_tags = pos_tag(tokens)
 print("\nPOS Tags:", pos_tags)
 
-# 3. Stop Words Removal
-stop_words = set(stopwords.words('english'))  # Get stop words in English
-filtered_tokens = [word for word in tokens if word.lower() not in stop_words and word not in string.punctuation]  # Remove stop words and punctuation
-print("\nFiltered Tokens (Stop Words Removed):", filtered_tokens)
+#stop-words removal
+stop_words = set(stopwords.words('english'))
+filtered_tokens = [word for word in tokens if word.lower() not in stop_words and word.isalpha()]
+print("\nFiltered Tokens:", filtered_tokens)
 
-# 4. Stemming
-stemmer = PorterStemmer()  # Initialize the stemmer
-stemmed_tokens = [stemmer.stem(word) for word in filtered_tokens]  # Apply stemming
+#stemming
+stemmer = PorterStemmer()
+stemmed_tokens = [stemmer.stem(word) for word in filtered_tokens]
 print("\nStemmed Tokens:", stemmed_tokens)
 
-# 5. Lemmatization
-lemmatizer = WordNetLemmatizer()  # Initialize the lemmatizer
-lemmatized_tokens = [lemmatizer.lemmatize(word) for word in filtered_tokens]  # Apply lemmatization
+#lemmatizing
+lemmatizer = WordNetLemmatizer()
+lemmatized_tokens = [lemmatizer.lemmatize(word) for word in filtered_tokens]
 print("\nLemmatized Tokens:", lemmatized_tokens)
+#part2
+#TF-IDF Representation
+documents = [
+    "Natural Language Processing helps computers understand human language.",
+    "Artificial Intelligence includes machine learning and NLP.",
+    "Text preprocessing includes tokenization, stemming, and lemmatization."
+]
+
+# Initialize TF-IDF Vectorizer
+vectorizer = TfidfVectorizer()
+
+# Fit and transform documents
+tfidf_matrix = vectorizer.fit_transform(documents)
+
+# Convert to DataFrame for readability
+tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=vectorizer.get_feature_names_out())
+print(tfidf_df)
 
